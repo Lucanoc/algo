@@ -4,13 +4,23 @@
 
 namespace dsa {
 	template <typename IteratorType, typename CompFuncType>
-	auto paritition3(IteratorType begin, IteratorType end, CompFuncType && cmp) -> std::pair<IteratorType> {
-		std::pair<IteratorType> bases(begin, end);
+	auto partition3(IteratorType begin, IteratorType end, CompFuncType && cmp) -> std::pair<IteratorType, IteratorType> {
+		std::pair<IteratorType, IteratorType> bases(begin, end);
 		IteratorType moving{begin + 1};
 
-		while (moving != end) {
+		while (moving != bases.second) {
+			if (cmp(*moving, *begin)) {
+				std::swap(*moving, *(++bases.first));
 
+				++moving;
+			} else if (*moving == *begin) {
+				++moving;
+			} else {
+				std::swap(*moving, *(--bases.second));
+			}
 		}
+
+		std::swap(*begin, *bases.first);
 
 		return bases;
 	}
@@ -23,7 +33,7 @@ namespace dsa {
 			return;
 		}
 
-		std::pair<IteratorType> bases {dsa::partition3(begin, end, cmp)};
+		std::pair<IteratorType, IteratorType> bases {dsa::partition3(begin, end, cmp)};
 
 		quickSort3(begin, bases.first, cmp);
 		quickSort3(bases.second, end, cmp);
